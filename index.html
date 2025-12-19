@@ -3,209 +3,304 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>6骰子选择掷出</title>
+  <title>6骰子选择掷出（更清晰版）</title>
   <style>
-    :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --card: #0b1220;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --border: rgba(255,255,255,.12);
-      --accent: #60a5fa;
-      --accent2: #34d399;
-      --shadow: 0 12px 30px rgba(0,0,0,.35);
-      --radius: 16px;
+    :root{
+      --bg:#0b1220;
+      --panel: rgba(255,255,255,.06);
+      --border: rgba(255,255,255,.14);
+      --text:#e5e7eb;
+      --muted:#a1a1aa;
+      --accent:#60a5fa;
+      --accent2:#34d399;
+
+      --die-bg:#ffffff;
+      --pip:#111827;
+      --die-border: rgba(17,24,39,.18);
+      --shadow: 0 16px 40px rgba(0,0,0,.35);
+      --radius: 18px;
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 600px at 20% 10%, rgba(96,165,250,.18), transparent 60%),
-                  radial-gradient(900px 500px at 80% 30%, rgba(52,211,153,.12), transparent 55%),
-                  var(--bg);
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color: var(--text);
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
+      background:
+        radial-gradient(1200px 600px at 20% 10%, rgba(96,165,250,.20), transparent 60%),
+        radial-gradient(900px 500px at 80% 30%, rgba(52,211,153,.14), transparent 55%),
+        var(--bg);
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:24px;
     }
-    .app {
-      width: min(980px, 100%);
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+
+    .app{
+      width: min(1020px, 100%);
       border: 1px solid var(--border);
       border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
       box-shadow: var(--shadow);
-      overflow: hidden;
+      overflow:hidden;
     }
-    header {
-      padding: 18px 20px;
-      background: rgba(0,0,0,.18);
+
+    header{
+      padding: 16px 20px;
       border-bottom: 1px solid var(--border);
-      display: flex;
-      gap: 14px;
-      align-items: baseline;
-      flex-wrap: wrap;
+      background: rgba(0,0,0,.20);
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      align-items:baseline;
+      justify-content:space-between;
     }
-    header h1 {
-      font-size: 18px;
-      margin: 0;
-      letter-spacing: .2px;
+    header h1{
+      font-size: 16px;
+      margin:0;
+      letter-spacing:.2px;
     }
-    header .hint {
+    header .hint{
       color: var(--muted);
       font-size: 13px;
+      line-height: 1.35;
     }
 
-    .content {
-      padding: 18px 20px 22px;
-      display: grid;
-      gap: 16px;
-    }
+    .content{ padding: 18px 20px 22px; display:grid; gap:16px; }
 
-    .dice-grid {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(110px, 1fr));
+    /* 顶部仪表盘 */
+    .dashboard{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      padding: 12px 12px;
+    }
+    .stats{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+    .chip{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 13px;
+      color: var(--text);
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      white-space:nowrap;
+    }
+    .chip b{ font-size: 14px; letter-spacing:.2px; }
+    .chip .label{ color: var(--muted); }
+
+    .dice-grid{
+      display:grid;
+      grid-template-columns: repeat(6, minmax(130px, 1fr));
       gap: 12px;
     }
-    @media (max-width: 760px) {
-      .dice-grid { grid-template-columns: repeat(3, minmax(110px, 1fr)); }
+    @media (max-width: 860px){
+      .dice-grid{ grid-template-columns: repeat(3, minmax(130px, 1fr)); }
     }
-    @media (max-width: 420px) {
-      .dice-grid { grid-template-columns: repeat(2, minmax(110px, 1fr)); }
+    @media (max-width: 420px){
+      .dice-grid{ grid-template-columns: repeat(2, minmax(130px, 1fr)); }
     }
 
-    .die-card {
-      background: rgba(255,255,255,.02);
-      border: 1px solid var(--border);
-      border-radius: 14px;
+    .die-card{
+      border:1px solid var(--border);
+      border-radius: 16px;
       padding: 12px;
-      display: grid;
+      background: rgba(255,255,255,.03);
+      display:grid;
       gap: 10px;
-      transition: transform .08s ease, border-color .12s ease, background .12s ease;
+      transition: transform .08s ease, border-color .12s ease, background .12s ease, opacity .12s ease;
     }
-    .die-card:hover { transform: translateY(-1px); }
-    .die {
-      height: 86px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      display: grid;
-      place-items: center;
-      font-size: 54px;
+    .die-card:hover{ transform: translateY(-1px); }
+    .die-card.selected{
+      border-color: rgba(96,165,250,.60);
+      background: rgba(96,165,250,.10);
+    }
+    .die-card.locked{
+      opacity: .70;
+    }
+
+    /* 骰子本体：白底黑点，更易读 */
+    .die{
+      height: 104px;
+      border-radius: 18px;
+      background: var(--die-bg);
+      border: 1px solid var(--die-border);
+      box-shadow: 0 10px 24px rgba(0,0,0,.18);
+      position: relative;
       cursor: pointer;
       user-select: none;
-      position: relative;
-      outline: none;
+      outline:none;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
     }
-    .die:focus-visible {
-      box-shadow: 0 0 0 3px rgba(96,165,250,.35);
+    .die:focus-visible{
+      box-shadow: 0 0 0 4px rgba(96,165,250,.35), 0 10px 24px rgba(0,0,0,.18);
     }
-    .die-card.selected {
-      border-color: rgba(96,165,250,.55);
-      background: rgba(96,165,250,.08);
-    }
-    .badge {
-      position: absolute;
+
+    /* 大号数字提示（角落） */
+    .die .num{
+      position:absolute;
+      left: 10px;
       top: 8px;
-      right: 8px;
-      font-size: 11px;
+      font-size: 18px;
+      font-weight: 800;
+      color: rgba(17,24,39,.85);
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(17,24,39,.10);
+      border-radius: 10px;
+      padding: 3px 8px;
+      line-height: 1;
+    }
+
+    /* 状态徽标 */
+    .die .badge{
+      position:absolute;
+      right: 10px;
+      top: 10px;
+      font-size: 12px;
       padding: 3px 8px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.22);
-      color: var(--muted);
+      border: 1px solid rgba(17,24,39,.18);
+      color: rgba(17,24,39,.75);
+      background: rgba(255,255,255,.78);
     }
-    .die-card.selected .badge {
-      color: #dbeafe;
-      border-color: rgba(96,165,250,.45);
+    .die-card.selected .die .badge{
+      border-color: rgba(96,165,250,.55);
+      color: rgba(30,64,175,.95);
       background: rgba(96,165,250,.18);
     }
 
-    .controls {
-      display: flex;
+    /* 点阵（3x3） */
+    .pips{
+      width: 72px;
+      height: 72px;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
       gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
+    }
+    .pip{
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: var(--pip);
+      opacity: 0;
+      transform: scale(.92);
+      transition: opacity .12s ease;
+      justify-self:center;
+      align-self:center;
+    }
+    .pip.on{ opacity: 1; }
+
+    /* 掷骰动画：仅对掷出的骰子施加 */
+    .die.rolling{
+      animation: roll .24s ease-in-out 0s 2;
+    }
+    @keyframes roll{
+      0%   { transform: translateX(0) rotate(0deg); }
+      25%  { transform: translateX(-2px) rotate(-2deg); }
+      50%  { transform: translateX(2px) rotate(2deg); }
+      75%  { transform: translateX(-2px) rotate(-1deg); }
+      100% { transform: translateX(0) rotate(0deg); }
+    }
+
+    label{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      cursor:pointer;
+      color: var(--muted);
+      font-size: 13px;
+      user-select:none;
+    }
+    input[type="checkbox"]{ width: 16px; height: 16px; }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
       border-top: 1px solid var(--border);
       padding-top: 14px;
     }
+    .left,.right{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 
-    .left, .right {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    button {
-      appearance: none;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.04);
+    button{
+      appearance:none;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.05);
       color: var(--text);
       padding: 10px 12px;
       border-radius: 12px;
-      cursor: pointer;
+      cursor:pointer;
       transition: transform .06s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
-      font-weight: 600;
-      letter-spacing: .2px;
+      font-weight:700;
+      letter-spacing:.2px;
     }
-    button:hover {
-      background: rgba(255,255,255,.06);
+    button:hover{
+      background: rgba(255,255,255,.08);
       border-color: rgba(255,255,255,.22);
     }
-    button:active { transform: translateY(1px); }
+    button:active{ transform: translateY(1px); }
 
-    .primary {
-      border-color: rgba(96,165,250,.45);
+    .primary{
+      border-color: rgba(96,165,250,.55);
       background: rgba(96,165,250,.18);
     }
-    .primary:hover { background: rgba(96,165,250,.24); }
+    .primary:hover{ background: rgba(96,165,250,.26); }
 
-    .success {
-      border-color: rgba(52,211,153,.45);
-      background: rgba(52,211,153,.14);
+    .success{
+      border-color: rgba(52,211,153,.55);
+      background: rgba(52,211,153,.16);
     }
-    .success:hover { background: rgba(52,211,153,.18); }
+    .success:hover{ background: rgba(52,211,153,.22); }
 
-    .status {
+    .danger{
+      border-color: rgba(248,113,113,.55);
+      background: rgba(248,113,113,.14);
+    }
+    .danger:hover{ background: rgba(248,113,113,.20); }
+
+    .status{
       color: var(--muted);
       font-size: 13px;
-    }
-
-    label {
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 13px;
-      user-select: none;
-    }
-    input[type="checkbox"] { width: 16px; height: 16px; }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
     }
   </style>
 </head>
+
 <body>
-  <div class="app" role="application" aria-label="6骰子选择掷出">
+  <div class="app" role="application" aria-label="6骰子选择掷出（更清晰版）">
     <header>
-      <h1>6 个骰子：选择后掷出</h1>
-      <div class="hint">勾选或点击骰子来选择要掷的骰子；未选中的会保留点数。</div>
+      <div>
+        <h1>6 个骰子：选择后掷出</h1>
+        <div class="hint">点击骰子或勾选来决定本次要掷哪些；未选中的会保留当前点数。</div>
+      </div>
+      <div class="hint">更清晰点数 + 总和 + 掷出次数 + 可重置</div>
     </header>
 
     <div class="content">
+      <div class="dashboard" aria-label="统计面板">
+        <div class="stats">
+          <div class="chip"><span class="label">总和</span> <b id="sumVal">0</b></div>
+          <div class="chip"><span class="label">掷出次数</span> <b id="rollCountVal">0</b></div>
+          <div class="chip"><span class="label">本次将掷</span> <b id="selectedCountVal">0</b><span class="label">/6</span></div>
+        </div>
+        <div id="status" class="status" aria-live="polite"></div>
+      </div>
+
       <div id="diceGrid" class="dice-grid" aria-label="骰子区域"></div>
 
       <div class="controls">
@@ -217,64 +312,116 @@
         <div class="right">
           <button id="btnSelectAll" type="button">全选</button>
           <button id="btnSelectNone" type="button">全不选</button>
-          <span id="status" class="status" aria-live="polite"></span>
+          <button id="btnReset" class="danger" type="button">重置</button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Unicode 骰子面：1~6 -> ⚀⚁⚂⚃⚄⚅
-    const face = (n) => String.fromCharCode(0x267F + n);
-
     const state = {
       values: Array.from({ length: 6 }, () => rand1to6()),
       selected: Array.from({ length: 6 }, () => true),
+      rollCount: 0, // 统计“有效掷出次数”
     };
 
     const diceGrid = document.getElementById("diceGrid");
     const statusEl = document.getElementById("status");
 
+    const sumValEl = document.getElementById("sumVal");
+    const rollCountEl = document.getElementById("rollCountVal");
+    const selectedCountEl = document.getElementById("selectedCountVal");
+
     const btnRoll = document.getElementById("btnRoll");
     const btnRollAll = document.getElementById("btnRollAll");
     const btnSelectAll = document.getElementById("btnSelectAll");
     const btnSelectNone = document.getElementById("btnSelectNone");
+    const btnReset = document.getElementById("btnReset");
 
     function rand1to6() {
       return Math.floor(Math.random() * 6) + 1;
     }
 
-    function render() {
+    // 3x3 点位索引：0..8
+    // 布局：
+    // 0 1 2
+    // 3 4 5
+    // 6 7 8
+    const pipMap = {
+      1: [4],
+      2: [0, 8],
+      3: [0, 4, 8],
+      4: [0, 2, 6, 8],
+      5: [0, 2, 4, 6, 8],
+      6: [0, 2, 3, 5, 6, 8],
+    };
+
+    function sumValues() {
+      return state.values.reduce((a, b) => a + b, 0);
+    }
+
+    function selectedCount() {
+      return state.selected.filter(Boolean).length;
+    }
+
+    function renderDashboard(message = "") {
+      sumValEl.textContent = String(sumValues());
+      rollCountEl.textContent = String(state.rollCount);
+      selectedCountEl.textContent = String(selectedCount());
+      statusEl.textContent = message || `已选择 ${selectedCount()}/6 个骰子掷出`;
+    }
+
+    function buildPips(val) {
+      const pips = document.createElement("div");
+      pips.className = "pips";
+      const onSet = new Set(pipMap[val]);
+
+      for (let i = 0; i < 9; i++) {
+        const pip = document.createElement("div");
+        pip.className = "pip" + (onSet.has(i) ? " on" : "");
+        pips.appendChild(pip);
+      }
+      return pips;
+    }
+
+    function render(message = "") {
       diceGrid.innerHTML = "";
 
       state.values.forEach((val, i) => {
         const card = document.createElement("div");
-        card.className = "die-card" + (state.selected[i] ? " selected" : "");
-        card.setAttribute("data-index", String(i));
+        const sel = state.selected[i];
+        card.className = "die-card" + (sel ? " selected" : " locked");
 
-        const dieBtn = document.createElement("div");
-        dieBtn.className = "die";
-        dieBtn.setAttribute("role", "button");
-        dieBtn.setAttribute("tabindex", "0");
-        dieBtn.setAttribute("aria-pressed", String(state.selected[i]));
-        dieBtn.setAttribute("aria-label", `骰子 ${i + 1}，当前点数 ${val}，${state.selected[i] ? "已选择掷出" : "保留不掷"}`);
-        dieBtn.textContent = face(val);
+        const die = document.createElement("div");
+        die.className = "die";
+        die.setAttribute("role", "button");
+        die.setAttribute("tabindex", "0");
+        die.setAttribute("aria-pressed", String(sel));
+        die.setAttribute(
+          "aria-label",
+          `骰子 ${i + 1}，当前点数 ${val}，${sel ? "已选择掷出" : "保留不掷"}`
+        );
+
+        const num = document.createElement("div");
+        num.className = "num";
+        num.textContent = String(val);
 
         const badge = document.createElement("div");
         badge.className = "badge";
-        badge.textContent = state.selected[i] ? "将掷出" : "保留";
+        badge.textContent = sel ? "将掷出" : "保留";
 
-        dieBtn.appendChild(badge);
+        die.appendChild(num);
+        die.appendChild(badge);
+        die.appendChild(buildPips(val));
 
-        // 复选框（和点击骰子同步）
+        // checkbox
         const label = document.createElement("label");
         const cb = document.createElement("input");
         cb.type = "checkbox";
-        cb.checked = state.selected[i];
+        cb.checked = sel;
         cb.setAttribute("aria-label", `选择骰子 ${i + 1} 是否掷出`);
         cb.addEventListener("change", () => {
           state.selected[i] = cb.checked;
-          renderStatus();
           render();
         });
 
@@ -284,74 +431,94 @@
         label.appendChild(cb);
         label.appendChild(txt);
 
-        // 点击骰子切换选中
         const toggle = () => {
           state.selected[i] = !state.selected[i];
-          renderStatus();
           render();
         };
 
-        dieBtn.addEventListener("click", toggle);
-        dieBtn.addEventListener("keydown", (e) => {
+        die.addEventListener("click", toggle);
+        die.addEventListener("keydown", (e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             toggle();
           }
         });
 
-        card.appendChild(dieBtn);
+        card.appendChild(die);
         card.appendChild(label);
         diceGrid.appendChild(card);
       });
 
-      renderStatus();
+      renderDashboard(message);
     }
 
-    function renderStatus(message = "") {
-      const selectedCount = state.selected.filter(Boolean).length;
-      statusEl.textContent = message || `已选择 ${selectedCount}/6 个骰子掷出`;
-      // 如果你希望“一个都不选时按钮不可点”，取消下一行注释即可：
-      // btnRoll.disabled = selectedCount === 0;
-      btnRoll.setAttribute("aria-disabled", "false");
+    function animateRolledDice(indices) {
+      // 给对应骰子加 rolling class
+      indices.forEach((i) => {
+        const card = diceGrid.children[i];
+        if (!card) return;
+        const die = card.querySelector(".die");
+        if (!die) return;
+        die.classList.remove("rolling");
+        // 强制 reflow 让动画可重复触发
+        void die.offsetWidth;
+        die.classList.add("rolling");
+        setTimeout(() => die.classList.remove("rolling"), 520);
+      });
     }
 
     function rollSelected() {
-      let changed = 0;
+      const toRoll = [];
       state.selected.forEach((sel, i) => {
-        if (sel) {
-          state.values[i] = rand1to6();
-          changed++;
-        }
+        if (sel) toRoll.push(i);
       });
-      renderStatus(changed === 0 ? "未选择任何骰子，点数保持不变" : `已掷出 ${changed} 个骰子`);
-      render();
+
+      if (toRoll.length === 0) {
+        render("未选择任何骰子：全部保留，点数不变");
+        return; // 不计入掷出次数
+      }
+
+      toRoll.forEach((i) => (state.values[i] = rand1to6()));
+      state.rollCount += 1;
+
+      render(`已掷出 ${toRoll.length} 个骰子（累计掷出次数：${state.rollCount}）`);
+      // 重新渲染后再做动画
+      animateRolledDice(toRoll);
     }
 
     function rollAll() {
       state.values = state.values.map(() => rand1to6());
       state.selected = state.selected.map(() => true);
-      renderStatus("已全部掷出（并默认全选）");
-      render();
+      state.rollCount += 1;
+
+      render(`已全部掷出（累计掷出次数：${state.rollCount}）`);
+      animateRolledDice([0,1,2,3,4,5]);
     }
 
     function selectAll() {
       state.selected = state.selected.map(() => true);
-      renderStatus("已全选");
-      render();
+      render("已全选：本次会掷出全部骰子");
     }
 
     function selectNone() {
       state.selected = state.selected.map(() => false);
-      renderStatus("已全不选（全部保留）");
-      render();
+      render("已全不选：本次全部保留");
+    }
+
+    function resetAll() {
+      // 你如果希望“重置后随机点数”，把下面这行改成 rand1to6()
+      state.values = state.values.map(() => 1);
+      state.selected = state.selected.map(() => true);
+      state.rollCount = 0;
+      render("已重置：点数=1、全选、掷出次数=0");
     }
 
     btnRoll.addEventListener("click", rollSelected);
     btnRollAll.addEventListener("click", rollAll);
     btnSelectAll.addEventListener("click", selectAll);
     btnSelectNone.addEventListener("click", selectNone);
+    btnReset.addEventListener("click", resetAll);
 
-    // 初始渲染
     render();
   </script>
 </body>
